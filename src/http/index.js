@@ -19,8 +19,8 @@ function post(url, data, success, failure = defaultFailure, error = defaultError
         },
         withCredentials: true
     }).then(({data}) => {
-        if(data.success)
-            success(data.message, data.status)
+        if(data.status==0 || data.status==200)
+            success(data.data, data.status)
         else
             failure(data.message, data.status)
     }).catch(error)

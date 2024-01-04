@@ -12,13 +12,13 @@
         <el-sub-menu index="2">
             <template #title>
                 <el-icon>
-                    <Histogram />
+                    <TrendCharts />
                 </el-icon>
                 <span>数据分析结果</span>
             </template>
 
             <el-menu-item index="2-1" @click="router.push('/COstatistics')">投诉对象统计</el-menu-item>
-            <el-menu-item index="2-2">投诉问题统计</el-menu-item>
+            <el-menu-item index="2-2" @click="router.push('/CQstatistics')">投诉问题统计</el-menu-item>
             <el-menu-item index="2-3">投诉行业统计</el-menu-item>
 
         </el-sub-menu>
@@ -40,7 +40,7 @@
         <el-sub-menu index="4">
             <template #title>
                 <el-icon>
-                    <Grid />
+                    <Management />
                 </el-icon>
                 <span>生成专报</span>
             </template>

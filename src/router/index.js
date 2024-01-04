@@ -41,6 +41,11 @@ const router = createRouter({
                     name: 'complaintObjectStatistics',
                     component: () => import('@/components/index/ComplaintObjectStatistics.vue')
                 },
+                {
+                    path: '/CQstatistics',
+                    name: 'complaintQuestionStatistics',
+                    component: () => import('@/components/index/ComplaintQuestionStatistics.vue')
+                },
 
             ],
         }
@@ -49,10 +54,12 @@ const router = createRouter({
 
 router.beforeEach((to, from, next) => {
     const store = useStore()
-    if (store.auth.user != null && to.name.startsWith("welcome-")) {
+    if (store.user != null && to.name.startsWith("welcome-")) {
         next('/index')
-    } else if (store.auth.user == null && to.fullPath.startsWith('/index')) {
-        next('/')
+        console.log('0');
+    } else if (store.user == null && to.fullPath.startsWith('/index')) {
+        next('/');
+        console.log(store.user);
     } else if (to.matched.length === 0) {
         next('/index')
     } else {

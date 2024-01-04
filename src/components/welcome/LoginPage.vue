@@ -21,18 +21,12 @@
       </el-input>
     </div>
     <el-row style="margin-top: 10px">
-      <el-col :span="12" style="text-align: left"><el-checkbox v-model="loginForm.remember" label="记住我"
-          size="small" /></el-col>
-      <el-col :span="12" style="text-align: right"><el-link @click="router.push('/forget')"
+      <el-col :span="24" style="text-align: right"><el-link @click="router.push('/forget')"
           style="font-size: 12px">忘记密码</el-link></el-col>
     </el-row>
     <div style="margin-top: 30px">
-      <el-button @click="temp_login" type="success" size="large" style="width: 100%" plain>登录</el-button>
+      <el-button @click="login" type="success" size="large" style="width: 100%" plain>登录</el-button>
     </div>
-    <el-divider>
-      <span style="color: gray; ">没有账号？</span>
-    </el-divider>
-    <el-button @click="router.push('/register')" type="warning" size="large" style="width: 100%" plain>注册账号</el-button>
 
   </div>
 </template>
@@ -48,25 +42,22 @@ const store = useStore()
 const loginForm = ref({
   username: '',
   password: '',
-  remember: ''
 })
 
+/**
+ * 登陆功能
+ */
 const login = () => {
   if (!loginForm.value.username || !loginForm.value.password) {
     ElMessage.warning('请填写用户名密码')
   } else {
-    post('/api/auth/login', {
-      username: loginForm.value.username,
+    post('/user/login', {
+      user_name: loginForm.value.username,
       password: loginForm.value.password,
-      remember: loginForm.value.remember
     }, (message) => {
-      ElMessage.success(message)
-      get("/api/user/get-user-info", (message) => {
-        store.auth.user = message
-        router.push("/index")
-      }, () => {
-        store.auth.user = null
-      })
+      ElMessage.success("登陆成功！")
+      store.user = message
+      router.push("/index")
     })
   }
 }

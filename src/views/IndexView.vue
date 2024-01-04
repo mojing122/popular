@@ -18,21 +18,10 @@
 </template>
 
 <script setup>
-import { get } from "@/http";
-import { ElMessage } from "element-plus";
-import router from "@/router/index.js";
 import { useStore } from "@/stores/index.js";
 import Header from "@/components/index/Header.vue"
 import SideMenu from "@/components/index/SideMenu.vue"
 
-const store = useStore();
-const logout = () => {
-  get('/api/auth/logout', (message) => {
-    ElMessage.success(message)
-    store.auth.user = null
-    router.push('/')
-  })
-}
 </script>
 
 

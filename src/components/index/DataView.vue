@@ -43,11 +43,23 @@
 
 <script setup>
 import * as echarts from 'echarts';
+import { get, post } from "@/http";
+import { ElMessage } from 'element-plus';
+import { ref } from 'vue';
 
-const totalCount = 100;
+const totalCount = ref(100);
 const todayUpdate = 20;
 const weekUpdate = 30;
 const monthUpdate = 50;
+
+const getData = () => {
+    post('heiMaoSub/total', {}, (message) => {
+        totalCount.value = message
+    })
+
+}
+
+getData();
 
 onMounted(() => {
     var ChartBuild = echarts.init(document.getElementById('chart-build'));
@@ -57,7 +69,7 @@ onMounted(() => {
 
     ChartBuild.setOption({
         title: {
-            text: '图谱构建次数'
+            text: '预留接口'
         },
         tooltip: {},
         xAxis: {
@@ -83,7 +95,7 @@ onMounted(() => {
 
     ChartCategory.setOption({
         title: {
-            text: '资源分类统计'
+            text: '预留接口'
         },
         tooltip: {},
         xAxis: {
@@ -134,6 +146,8 @@ onMounted(() => {
 
     window.addEventListener('resize', function () {
         ChartBuild.resize();
+        ChartCategory.resize();
+        ChartTrend.resize();
     });
 })
 
@@ -151,9 +165,5 @@ onMounted(() => {
 
 .statistic-card {
     padding: 7px;
-}
-
-.box-card {
-    margin: 7px;
 }
 </style>
