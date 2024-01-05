@@ -3,19 +3,21 @@
         <el-card class="box-card">
             <el-form label-width="100px" style="padding-top: 10px;">
                 <el-row>
-                    <el-col :span="11">
+                    <el-col :span="6">
                         <el-form-item label="统计时间">
-                            <el-select v-model="timeSelect" class="m-2" placeholder="Select">
-                                <el-option v-for="item in options" :key="item.value" :label="item.label"
-                                    :value="item.value" />
+                            <el-select v-model="timeSelect" value-key="id" class="m-2" placeholder="Select">
+                                <el-option v-for="item in options" :key="item.id" :label="item.label" :value="item" />
                             </el-select>
                         </el-form-item>
                     </el-col>
-                    <el-col :span="11">
-                        <el-form-item label="自定义时间">
-                            <el-date-picker v-model="timeSelect2" type="daterange" unlink-panels range-separator="-"
-                                start-placeholder="开始日期" end-placeholder="结束日期" />
+                    <el-col :span="12">
+                        <el-form-item label="统计范围">
+                            <el-date-picker :disabled="timeSelect.id != 4" v-model="timeSelect.time" type="daterange"
+                                unlink-panels range-separator="-" start-placeholder="开始日期" end-placeholder="结束日期" />
                         </el-form-item>
+                    </el-col>
+                    <el-col :span="4" :offset="2">
+                        <el-button type="primary" plain :icon="Refresh" @click="getData(timeSelect.time)">刷新数据</el-button>
                     </el-col>
                 </el-row>
             </el-form>
@@ -25,26 +27,96 @@
     </div>
 </template>
 ·
-<script setup>
+<script setup lang="ts">
 import * as echarts from 'echarts';
+import { onMounted, ref } from 'vue'
+import {
+    Refresh
+} from '@element-plus/icons-vue'
 
-const timeSelect = ref('')
-const timeSelect2 = ref('')
+import { get, post } from "@/http";
 
-const options = [
+/**
+ * 计算过去一段时间的起始和结束时间
+ * @param day 间隔天数
+ */
+const clacDate = (day) => {
+    const end = new Date()
+    const start = new Date()
+    start.setTime(start.getTime() - 3600 * 1000 * 24 * day)
+    return [start, end]
+}
+
+/**
+ * 格式化日期   YYYY-mm-dd
+ * @param date 
+ */
+const formatDate = (date) => {
+    let year = date.toISOString().slice(0, 4);
+    let month = ("0" + (date.getMonth() + 1)).slice(-2);
+    let day = ("0" + date.getDate()).slice(-2);
+
+    let formattedDate = year + "-" + month + "-" + day;
+    return formattedDate
+}
+
+type Option = {
+    id: number
+    label: string
+    time: Date[]
+}
+const timeSelect = ref<Option>({
+    id: 2,
+    label: "一周以内",
+    time: clacDate(7)
+})
+
+const options = ref([
     {
-        value: 'day',
-        label: '当天',
+        id: 1,
+        label: '当日',
+        time: clacDate(1)
     },
     {
-        value: 'week',
-        label: '本周',
+        id: 2,
+        label: '一周以内',
+        time: clacDate(7)
     },
     {
-        value: 'month',
-        label: '本月',
-    }
-]
+        id: 3,
+        label: '一个月内',
+        time: clacDate(31)
+    },
+    {
+        id: 4,
+        label: '自定义',
+        time: clacDate(1)
+    },
+])
+
+/**
+ * 请求一段时间内的统计数据
+ * @param time [起始时间，结束时间]
+ */
+const getData = (time) => {
+    const startDate = formatDate(time[0]);
+    const endDate = formatDate(time[1]);
+
+    post('/heiMaoSub/classifyName', {
+        startDate: startDate,
+        endDate: endDate,
+    }, (message) => {
+        var Chart = echarts.getInstanceByDom(document.getElementById('chart'));
+        Chart.setOption({
+            series: [
+                {
+                    data: message
+                }]
+        })
+
+    })
+
+}
 
 onMounted(() => {
     var Chart = echarts.init(document.getElementById('chart'));
@@ -68,16 +140,10 @@ onMounted(() => {
                 type: 'pie',
                 radius: '50%',
                 data: [
-                    { value: 1048, name: '电信服务' },
-                    { value: 735, name: '预制调理肉制品' },
-                    { value: 580, name: '物业服务' },
-                    { value: 484, name: '餐饮具' },
-                    { value: 300, name: '糯米粉' },
-                    { value: 213, name: '中介服务' },
-                    { value: 187, name: '微型洗衣机' },
-                    { value: 155, name: '扫描仪' },
-                    { value: 127, name: '消毒柜' },
-                    { value: 95, name: '电热水器' }
+                    {
+                        "value": 0,
+                        "name": "unknown"
+                    }
                 ],
                 emphasis: {
                     itemStyle: {
@@ -90,10 +156,12 @@ onMounted(() => {
         ]
     });
 
+    getData(timeSelect.value.time);
+
     window.addEventListener('resize', function () {
         Chart.resize();
     });
 })
 </script>
 
-<style lang="scss" scoped></style>
+<style scoped></style>

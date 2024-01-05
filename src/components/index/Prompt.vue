@@ -9,8 +9,9 @@
             <el-tabs v-model="editableTabsValue" tab-position="left" type="card" closable @edit="handleTabsEdit">
                 <el-tab-pane v-for="item in editableTabs" :key="item.name" :label="item.title" :name="item.name">
                     <div class="edit-pane">
+                        <el-input v-model="item.title" placeholder="Please input" style="margin-bottom: 10px;" />
                         <el-input v-model="item.content" :autosize="{ minRows: 4, maxRows: 6 }" type="textarea"
-                            placeholder="Please input" />
+                            placeholder="请输入分类Prompt" />
                         <el-button type="primary" :icon="Check" class="check-button">更新Prompt</el-button>
                     </div>
                 </el-tab-pane>
@@ -27,16 +28,16 @@ import {
     Check
 } from '@element-plus/icons-vue'
 
-let tabIndex = 2
-const editableTabsValue = ref('2')
+let tabIndex = 8
+const editableTabsValue = ref('8')
 
 
 const addTab = (targetName: string) => {
     const newTabName = `${++tabIndex}`
     editableTabs.value.push({
-        title: 'New Tab',
+        title: '新类别',
         name: newTabName,
-        content: 'New Tab content',
+        content: '',
     })
     editableTabsValue.value = newTabName
 }

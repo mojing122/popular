@@ -3,19 +3,21 @@
         <el-card class="box-card">
             <el-form label-width="100px" style="padding-top: 10px;">
                 <el-row>
-                    <el-col :span="11">
+                    <el-col :span="6">
                         <el-form-item label="统计时间">
-                            <el-select v-model="timeSelect" class="m-2" placeholder="Select">
-                                <el-option v-for="item in options" :key="item.value" :label="item.label"
-                                    :value="item.value" />
+                            <el-select v-model="timeSelect" value-key="id" class="m-2" placeholder="Select">
+                                <el-option v-for="item in options" :key="item.id" :label="item.label" :value="item" />
                             </el-select>
                         </el-form-item>
                     </el-col>
-                    <el-col :span="11">
-                        <el-form-item label="自定义时间">
-                            <el-date-picker v-model="timeSelect2" type="daterange" unlink-panels range-separator="-"
-                                start-placeholder="开始日期" end-placeholder="结束日期" />
+                    <el-col :span="12">
+                        <el-form-item label="统计范围">
+                            <el-date-picker :disabled="timeSelect.id != 4" v-model="timeSelect.time" type="daterange"
+                                unlink-panels range-separator="-" start-placeholder="开始日期" end-placeholder="结束日期" />
                         </el-form-item>
+                    </el-col>
+                    <el-col :span="4" :offset="2">
+                        <el-button type="primary" plain :icon="Refresh" @click="getData(timeSelect.time)">刷新数据</el-button>
                     </el-col>
                 </el-row>
             </el-form>
@@ -25,26 +27,107 @@
     </div>
 </template>
 ·
-<script setup>
+<script setup lang="ts">
 import * as echarts from 'echarts';
+import { onMounted, ref } from 'vue'
+import {
+    Refresh
+} from '@element-plus/icons-vue'
 
-const timeSelect = ref('')
-const timeSelect2 = ref('')
+import { get, post } from "@/http";
+import { da } from 'element-plus/es/locale';
 
-const options = [
+/**
+ * 计算过去一段时间的起始和结束时间
+ * @param day 间隔天数
+ */
+const clacDate = (day) => {
+    const end = new Date()
+    const start = new Date()
+    start.setTime(start.getTime() - 3600 * 1000 * 24 * day)
+    return [start, end]
+}
+
+/**
+ * 格式化日期   YYYY-mm-dd
+ * @param date 
+ */
+const formatDate = (date) => {
+    let year = date.toISOString().slice(0, 4);
+    let month = ("0" + (date.getMonth() + 1)).slice(-2);
+    let day = ("0" + date.getDate()).slice(-2);
+
+    let formattedDate = year + "-" + month + "-" + day;
+    return formattedDate
+}
+
+type Option = {
+    id: number
+    label: string
+    time: Date[]
+}
+const timeSelect = ref<Option>({
+    id: 2,
+    label: "一周以内",
+    time: clacDate(7)
+})
+
+const options = ref([
     {
-        value: 'day',
-        label: '当天',
+        id: 1,
+        label: '当日',
+        time: clacDate(1)
     },
     {
-        value: 'week',
-        label: '本周',
+        id: 2,
+        label: '一周以内',
+        time: clacDate(7)
     },
     {
-        value: 'month',
-        label: '本月',
-    }
-]
+        id: 3,
+        label: '一个月内',
+        time: clacDate(31)
+    },
+    {
+        id: 4,
+        label: '自定义',
+        time: clacDate(1)
+    },
+])
+
+/**
+ * 请求一段时间内的统计数据
+ * @param time [起始时间，结束时间]
+ */
+const getData = (time) => {
+    const startDate = formatDate(time[0]);
+    const endDate = formatDate(time[1]);
+
+    post('/heiMaoSub/classifyName', {
+        startDate: startDate,
+        endDate: endDate,
+    }, (message) => {
+        const name = []
+        const value = []
+        message.forEach(element => {
+            name.push(element.name)
+            value.push(element.value)
+        });
+        var Chart = echarts.getInstanceByDom(document.getElementById('chart'));
+        Chart.setOption({
+            xAxis: {
+                data: name,
+            },
+            series: [
+                {
+                    data: value
+                }]
+        })
+
+    })
+
+}
+
 
 onMounted(() => {
     var Chart = echarts.init(document.getElementById('chart'));
@@ -55,65 +138,38 @@ onMounted(() => {
             text: '投诉对象分析',
             left: 'center'
         },
-        dataset: {
-            source: [
-                ['score', 'amount', 'product'],
-                [89.3, 58212, '鞋帽'],
-                [57.1, 78254, '书包'],
-                [74.4, 41032, '中央空调'],
-                [50.1, 12755, '电脑式微波炉'],
-                [89.7, 20145, '电暖器'],
-                [68.1, 79146, '绞肉机'],
-                [19.6, 91852, '钻石玻璃'],
-                [10.6, 101852, '宠物用品'],
-                [32.7, 20112, '成人座椅']
-            ]
+        yAxis: {
+            max: 'dataMax'
         },
-        tooltip: {
-            trigger: 'item'
-        },
-        grid: { containLabel: true },
-        yAxis: { name: 'amount' },
         xAxis: {
             type: 'category',
-            axisLabel: {
-                interval: 0, // 设置标签不省略  
-                rotate: 45, // 标签倾斜45度  
-                formatter: function (value) {
-                    if (value.length > 5) { // 如果标签长度超过 5 个字符，则截取前 5 个字符显示
-                        return value.substring(0, 5) + '...';
-                    } else {
-                        return value;
-                    }
-                }
-            },
-        },
-        visualMap: {
-            orient: 'vertical',
-            right: 0,
-            top: 0,
-            min: 10,
-            max: 100,
-            text: ['100', '0'],
-            // Map the score column to color
-            dimension: 0,
-            inRange: {
-                color: ['#65B581', '#FFCE34', '#FD665F']
-            }
+            data: ['unkonwn'],
+            inverse: false,
+            animationDuration: 300,
+            animationDurationUpdate: 300,
+            max: 7 // only the largest 8 bars will be displayed
         },
         series: [
             {
+                realtimeSort: true,
+                name: 'X',
                 type: 'bar',
-                encode: {
-                    // Map the "amount" column to Y axis.
-                    y: 'amount',
-                    // Map the "product" column to X axis
-                    x: 'product'
+                data: [0],
+                label: {
+                    show: true,
+                    position: 'top',
+                    valueAnimation: true
                 }
             }
-        ]
+        ],
+        animationDuration: 0,
+        animationDurationUpdate: 1000,
+        animationEasing: 'linear',
+        animationEasingUpdate: 'linear'
 
     });
+
+    getData(timeSelect.value.time);
 
     window.addEventListener('resize', function () {
         Chart.resize();

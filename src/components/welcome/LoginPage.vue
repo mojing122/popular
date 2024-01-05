@@ -54,11 +54,13 @@ const login = () => {
     post('/user/login', {
       user_name: loginForm.value.username,
       password: loginForm.value.password,
-    }, (message) => {
-      ElMessage.success("登陆成功！")
-      store.user = message
-      router.push("/index")
-    })
+    },
+      (message) => {
+        ElMessage.success("登陆成功！")
+        store.user = message
+        router.push("/index")
+      },
+      'application/x-www-form-urlencoded')
   }
 }
 

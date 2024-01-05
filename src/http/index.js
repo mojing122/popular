@@ -12,14 +12,14 @@ const defaultFailure = (message) => ElMessage.warning(message)
  * @param failure 失败回调
  * @param error 错误回调
  */
-function post(url, data, success, failure = defaultFailure, error = defaultError){
+function post(url, data, success, type = 'application/json' ,failure = defaultFailure, error = defaultError){
     axios.post(url, data, {
         headers:{
-            'Content-Type':	'application/x-www-form-urlencoded'
+            'Content-Type':	type
         },
         withCredentials: true
     }).then(({data}) => {
-        if(data.status==0 || data.status==200)
+        if(data.status==0 || data.success)
             success(data.data, data.status)
         else
             failure(data.message, data.status)
