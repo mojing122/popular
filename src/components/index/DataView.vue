@@ -47,10 +47,10 @@ import { get, post } from "@/http";
 import { ElMessage } from 'element-plus';
 import { ref } from 'vue';
 
-const totalCount = ref(100);
-const todayUpdate = 20;
-const weekUpdate = 30;
-const monthUpdate = 50;
+const totalCount = ref(0);
+const todayUpdate = 21;
+const weekUpdate = 34;
+const monthUpdate = 57;
 
 const getData = () => {
     post('heiMaoSub/total', {}, (message) => {

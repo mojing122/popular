@@ -46,6 +46,36 @@ const router = createRouter({
                     name: 'complaintQuestionStatistics',
                     component: () => import('@/components/index/ComplaintQuestionStatistics.vue')
                 },
+                {
+                    path: '/CIstatistics',
+                    name: 'complaintIndustryStatistics',
+                    component: () => import('@/components/index/ComplaintIndustryStatistics.vue')
+                },
+                {
+                    path: '/COanalyse',
+                    name: 'complaintObjectAnalyse',
+                    component: () => import('@/components/index/ComplaintObjectAnalyse.vue')
+                },
+                {
+                    path: '/CQanalyse',
+                    name: 'complaintQuestionAnalyse',
+                    component: () => import('@/components/index/ComplaintQuestionAnalyse.vue')
+                },
+                {
+                    path: '/CIanalyse',
+                    name: 'complaintIndustryAnalyse',
+                    component: () => import('@/components/index/ComplaintIndustryAnalyse.vue')
+                },
+                {
+                    path: '/report',
+                    name: 'report',
+                    component: () => import('@/components/index/Report.vue')
+                },
+                {
+                    path: '/prompt',
+                    name: 'prompt',
+                    component: () => import('@/components/index/Prompt.vue')
+                }
 
             ],
         }

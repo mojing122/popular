@@ -19,7 +19,7 @@
 
             <el-menu-item index="2-1" @click="router.push('/COstatistics')">投诉对象统计</el-menu-item>
             <el-menu-item index="2-2" @click="router.push('/CQstatistics')">投诉问题统计</el-menu-item>
-            <el-menu-item index="2-3">投诉行业统计</el-menu-item>
+            <el-menu-item index="2-3" @click="router.push('/CIstatistics')">投诉行业统计</el-menu-item>
 
         </el-sub-menu>
 
@@ -31,9 +31,9 @@
                 <span>风险分析</span>
             </template>
 
-            <el-menu-item index="3-1">投诉对象风险分析</el-menu-item>
-            <el-menu-item index="3-2">投诉问题风险分析</el-menu-item>
-            <el-menu-item index="3-2">投诉行业风险分析</el-menu-item>
+            <el-menu-item index="3-1" @click="router.push('/COanalyse')">投诉对象风险分析</el-menu-item>
+            <el-menu-item index="3-2" @click="router.push('/CQanalyse')">投诉问题风险分析</el-menu-item>
+            <el-menu-item index="3-3" @click="router.push('/CIanalyse')">投诉行业风险分析</el-menu-item>
 
         </el-sub-menu>
 
@@ -42,12 +42,22 @@
                 <el-icon>
                     <Management />
                 </el-icon>
-                <span>生成专报</span>
+                <span>专报任务</span>
             </template>
 
-            <el-menu-item index="4-1">新建专报任务</el-menu-item>
+            <el-menu-item index="4-2" @click="router.push('/report')">新建专报任务</el-menu-item>
+            <el-menu-item index="4-1" @click="router.push('/report')">生成专报</el-menu-item>
 
         </el-sub-menu>
+
+        <el-menu-item index="5" @click="router.push('/prompt')">
+            <template #title>
+                <el-icon>
+                    <Tools />
+                </el-icon>
+                <span>Prompt配置</span>
+            </template>
+        </el-menu-item>
     </el-menu>
 </template>
   

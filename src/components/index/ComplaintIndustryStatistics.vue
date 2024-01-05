@@ -52,7 +52,7 @@ onMounted(() => {
 
     Chart.setOption({
         title: {
-            text: '投诉对象统计',
+            text: '投诉行业统计',
             left: 'center'
         },
         tooltip: {
@@ -66,18 +66,20 @@ onMounted(() => {
             {
                 name: '投诉记录',
                 type: 'pie',
-                radius: '50%',
+                radius: [20, 140],
+                roseType: 'radius',
+                itemStyle: {
+                    borderRadius: 5
+                },
                 data: [
-                    { value: 1048, name: '电信服务' },
-                    { value: 735, name: '预制调理肉制品' },
-                    { value: 580, name: '物业服务' },
-                    { value: 484, name: '餐饮具' },
-                    { value: 300, name: '糯米粉' },
-                    { value: 213, name: '中介服务' },
-                    { value: 187, name: '微型洗衣机' },
-                    { value: 155, name: '扫描仪' },
-                    { value: 127, name: '消毒柜' },
-                    { value: 95, name: '电热水器' }
+                    { value: 1048, name: 'Search Engine' },
+                    { value: 735, name: 'Direct' },
+                    { value: 580, name: 'Email' },
+                    { value: 484, name: 'Union Ads' },
+                    { value: 300, name: '他' },
+                    { value: 300, name: 't2' },
+                    { value: 300, name: 't3' },
+                    { value: 300, name: 't4' }
                 ],
                 emphasis: {
                     itemStyle: {

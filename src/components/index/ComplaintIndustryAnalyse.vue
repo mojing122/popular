@@ -52,39 +52,63 @@ onMounted(() => {
 
     Chart.setOption({
         title: {
-            text: '投诉对象统计',
+            text: '投诉行业分析',
             left: 'center'
+        },
+        dataset: {
+            source: [
+                ['score', 'amount', 'product'],
+                [89.3, 58212, '鞋帽'],
+                [57.1, 78254, '书包'],
+                [74.4, 41032, '中央空调'],
+                [50.1, 12755, '电脑式微波炉'],
+                [89.7, 20145, '电暖器'],
+                [68.1, 79146, '绞肉机'],
+                [19.6, 91852, '钻石玻璃'],
+                [10.6, 101852, '宠物用品'],
+                [32.7, 20112, '成人座椅']
+            ]
         },
         tooltip: {
             trigger: 'item'
         },
-        legend: {
+        grid: { containLabel: true },
+        yAxis: { name: 'amount' },
+        xAxis: {
+            type: 'category',
+            axisLabel: {
+                interval: 0, // 设置标签不省略  
+                rotate: 45, // 标签倾斜45度  
+                formatter: function (value) {
+                    if (value.length > 5) { // 如果标签长度超过 5 个字符，则截取前 5 个字符显示
+                        return value.substring(0, 5) + '...';
+                    } else {
+                        return value;
+                    }
+                }
+            },
+        },
+        visualMap: {
             orient: 'vertical',
-            left: 'right'
+            right: 0,
+            top: 0,
+            min: 10,
+            max: 100,
+            text: ['100', '0'],
+            // Map the score column to color
+            dimension: 0,
+            inRange: {
+                color: ['#65B581', '#FFCE34', '#FD665F']
+            }
         },
         series: [
             {
-                name: '投诉记录',
-                type: 'pie',
-                radius: '50%',
-                data: [
-                    { value: 1048, name: '电信服务' },
-                    { value: 735, name: '预制调理肉制品' },
-                    { value: 580, name: '物业服务' },
-                    { value: 484, name: '餐饮具' },
-                    { value: 300, name: '糯米粉' },
-                    { value: 213, name: '中介服务' },
-                    { value: 187, name: '微型洗衣机' },
-                    { value: 155, name: '扫描仪' },
-                    { value: 127, name: '消毒柜' },
-                    { value: 95, name: '电热水器' }
-                ],
-                emphasis: {
-                    itemStyle: {
-                        shadowBlur: 10,
-                        shadowOffsetX: 0,
-                        shadowColor: 'rgba(0, 0, 0, 0.5)'
-                    }
+                type: 'bar',
+                encode: {
+                    // Map the "amount" column to Y axis.
+                    y: 'amount',
+                    // Map the "product" column to X axis
+                    x: 'product'
                 }
             }
         ]
