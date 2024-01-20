@@ -35,7 +35,6 @@ import {
 } from '@element-plus/icons-vue'
 
 import { get, post } from "@/http";
-import { da } from 'element-plus/es/locale';
 
 /**
  * 计算过去一段时间的起始和结束时间

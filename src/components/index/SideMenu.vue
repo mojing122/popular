@@ -42,22 +42,26 @@
                 <el-icon>
                     <Management />
                 </el-icon>
-                <span>专报任务</span>
+                <span>专报</span>
             </template>
 
-            <el-menu-item index="4-2" @click="router.push('/report')">新建专报任务</el-menu-item>
             <el-menu-item index="4-1" @click="router.push('/report')">生成专报</el-menu-item>
 
         </el-sub-menu>
 
-        <el-menu-item index="5" @click="router.push('/prompt')">
+        <el-sub-menu index="5">
             <template #title>
                 <el-icon>
                     <Tools />
                 </el-icon>
-                <span>Prompt配置</span>
+                <span>任务</span>
             </template>
-        </el-menu-item>
+
+            <el-menu-item index="5-1" @click="router.push('/prompt')">Prompt配置</el-menu-item>
+            <el-menu-item index="5-2" @click="router.push('/temptask')">新建任务</el-menu-item>
+
+
+        </el-sub-menu>
     </el-menu>
 </template>
   
