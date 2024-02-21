@@ -100,7 +100,7 @@ const getData = (time) => {
     let endDatePastD = new Date(time[1].getTime() - day * 24 * 3600 * 1000);
     const endDatePast = formatDate(endDatePastD);
 
-    post('/heiMaoSub/classifyName-bar', {
+    post('/heiMaoSub/problem-tag/bar', {
         startDate: startDate,
         endDate: endDate,
         startDatePast: startDatePast,
@@ -141,7 +141,7 @@ onMounted(() => {
 
     Chart.setOption({
         title: {
-            text: '投诉对象风险分析(涨幅)',
+            text: '投诉问题风险分析(涨幅)',
             left: 'center'
         },
         yAxis: {
@@ -192,7 +192,7 @@ onMounted(() => {
 
     Chart2.setOption({
         title: {
-            text: '投诉对象风险分析(降幅)',
+            text: '投诉问题风险分析(降幅)',
             left: 'center'
         },
         yAxis: {

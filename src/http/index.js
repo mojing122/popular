@@ -53,4 +53,18 @@ function get(url, success, failure = defaultFailure, error = defaultError) {
     .catch(error);
 }
 
-export { get, post };
+function postWithOutCheck(url, data, success) {
+  axios
+    .post(url, data, {
+      headers: {
+        "Content-Type": "application/json",
+      },
+      withCredentials: true,
+    })
+    .then(({ data }) => {
+      success(data.data, data.status);
+    })
+    .catch();
+}
+
+export { get, post, postWithOutCheck };

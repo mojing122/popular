@@ -18,7 +18,7 @@
             </template>
 
             <el-menu-item index="2-1" @click="router.push('/COstatistics')">投诉对象统计</el-menu-item>
-            <el-menu-item index="2-2" @click="router.push('/CQstatistics')">投诉问题统计</el-menu-item>
+            <el-menu-item index="2-2" @click="router.push('/CPstatistics')">投诉问题统计</el-menu-item>
             <el-menu-item index="2-3" @click="router.push('/CIstatistics')">投诉行业统计</el-menu-item>
 
         </el-sub-menu>
@@ -32,7 +32,7 @@
             </template>
 
             <el-menu-item index="3-1" @click="router.push('/COanalyse')">投诉对象风险分析</el-menu-item>
-            <el-menu-item index="3-2" @click="router.push('/CQanalyse')">投诉问题风险分析</el-menu-item>
+            <el-menu-item index="3-2" @click="router.push('/CPanalyse')">投诉问题风险分析</el-menu-item>
             <el-menu-item index="3-3" @click="router.push('/CIanalyse')">投诉行业风险分析</el-menu-item>
 
         </el-sub-menu>

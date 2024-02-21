@@ -97,15 +97,30 @@ const getData = (time) => {
     const startDate = formatDate(time[0]);
     const endDate = formatDate(time[1]);
 
-    post('/heiMaoSub/classifyName', {
+    post('/heiMaoSub/problem-tag/chart', {
         startDate: startDate,
         endDate: endDate,
     }, (message) => {
+        var formattedData = [];
+        for (var key in message) {
+            if (message.hasOwnProperty(key)) {
+                formattedData.push({
+                    "name": key,
+                    "value": message[key]
+                });
+            }
+        }
+        formattedData.sort(function (a, b) {
+            return b.value - a.value;
+        });
+
+        // 只取前10个数据项    
+        var top10Data = formattedData.slice(0, 10);
         var Chart = echarts.getInstanceByDom(document.getElementById('chart'));
         Chart.setOption({
             series: [
                 {
-                    data: message
+                    data: top10Data
                 }]
         })
 
@@ -119,7 +134,7 @@ onMounted(() => {
 
     Chart.setOption({
         title: {
-            text: '投诉对象统计',
+            text: '投诉问题统计',
             left: 'center'
         },
         tooltip: {

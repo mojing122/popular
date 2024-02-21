@@ -21,9 +21,11 @@ for (const [key, component] of Object.entries(ElementPlusIconsVue)) {
 const pinia = createPinia();
 pinia.use(piniaPersist);
 
-axios.defaults.baseURL = "http://localhost:9123";
-app.config.globalProperties.$downloadPath =
-  "http://localhost:9123/heiMaoSub/download/";
+// const apiURL = "http://116.62.190.1:9999";
+const apiURL = "http://localhost:9123";
+
+axios.defaults.baseURL = apiURL;
+app.config.globalProperties.$downloadPath = apiURL;
 
 app.use(pinia);
 app.use(router);

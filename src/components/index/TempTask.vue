@@ -12,6 +12,7 @@
                         <el-tab-pane v-for="item in editableTabs" :key="item.id" :label="item.title" :name="item.id">
                             <div class="edit-pane">
                                 <el-input v-model="item.title" placeholder="Please input" style="margin-bottom: 10px;" />
+                                <el-switch v-model="item.level" active-text="是否属于某一个具体行业，产品" style="margin-bottom: 10px;" />
                                 <el-input v-model="item.content" :autosize="{ minRows: 4, maxRows: 6 }" type="textarea"
                                     placeholder="请输入分类Prompt" />
                                 <el-button type="primary" :icon="Check" class="check-button"
@@ -34,7 +35,7 @@
                             </el-col>
                             <el-col :span="14">
                                 <el-form-item label="统计范围">
-                                    <el-date-picker :disabled="timeSelect.id != 4" v-model="timeSelect.time"
+                                    <el-date-picker :disabled="timeSelect.id != 3" v-model="timeSelect.time"
                                         type="daterange" unlink-panels range-separator="-" start-placeholder="开始日期"
                                         end-placeholder="结束日期" />
                                 </el-form-item>
@@ -54,37 +55,45 @@
                 临时任务记录
             </h2>
             <el-table :data="tableData" style="width: 100%">
-                <el-table-column fixed prop="date" label="日期" width="150" />
-                <el-table-column prop="time" label="时间" />
-                <el-table-column prop="state" label="状态" width="120">
+                <el-table-column fixed prop="id" label="任务ID" width="200" />
+                <el-table-column prop="startTime" label="开始时间" width="180" />
+                <el-table-column prop="endTime" label="截止时间" width="180" />
+                <el-table-column prop="status" label="状态" width="120">
                     <template #default="scoped">
-                        <el-tag v-if="scoped.row.state == '已完成'" class="ml-2" type="success">已完成</el-tag>
-                        <el-tag v-else class="ml-2" type="warning">处理中</el-tag>
+                        <el-tag v-if="scoped.row.status == 2" class="ml-2" type="success">已完成</el-tag>
+                        <el-tag v-if="scoped.row.status == 0" class="ml-2" type="danger">未执行</el-tag>
+                        <el-tag v-if="scoped.row.status == 1" class="ml-2" type="warning">处理中</el-tag>
                     </template>
                 </el-table-column>
                 <el-table-column fixed="right" label="操作" width="120">
                     <template #default="scoped">
-                        <el-button link type="primary" :disabled="!(scoped.row.state == '已完成')">下载</el-button>
+                        <el-button link type="primary"><a
+                                :href="downloadPath + '/file/temp-result-file/' + scoped.row.id + '.csv'"
+                                v-if="(scoped.row.status == 2)">下载</a></el-button>
                     </template>
                 </el-table-column>
             </el-table>
-            <el-pagination small background layout="sizes,prev, pager, next, total" :total="tableData.length"
-                style="float: right; margin: 20px;" />
+            <el-pagination small background v-model:current-page="currentPage" v-model:page-size="pageSize"
+                layout="sizes,prev, pager, next, total" :total="total" :page-sizes="[5, 10, 15, 20]"
+                @size-change="updateTable" @current-change="updateTable" style="float: right; margin: 20px;" />
 
         </el-card>
     </div>
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue'
+import { ref, getCurrentInstance } from 'vue'
 import type { TabPaneName } from 'element-plus'
 import { ElMessage, ElMessageBox } from 'element-plus'
-import { get, post } from "@/http";
+import { get, post, postWithOutCheck } from "@/http";
 
 import {
     Check,
     Refresh
 } from '@element-plus/icons-vue'
+
+const con = getCurrentInstance();
+const downloadPath = con.appContext.config.globalProperties.$downloadPath;
 
 let tabIndex = 8
 const editableTabsValue = ref('8')
@@ -94,7 +103,7 @@ const addTab = (targetName: string) => {
     const newTabName = `${++tabIndex}`
     editableTabs.value.push({
         title: '新类别',
-        name: newTabName,
+        id: newTabName,
         content: '',
     })
     editableTabsValue.value = newTabName
@@ -104,35 +113,51 @@ const editableTabs = ref([
     {}
 ])
 
+const tableData = ref([])
+const total = ref(0)
+const currentPage = ref(1)
+const pageSize = ref(5)
 
 get('/heiMaoSub/getPrompt', (message) => {
-    editableTabs.value = message;
+    editableTabs.value = message.map(prompt => ({
+        id: prompt.id,
+        title: prompt.title,
+        content: prompt.content,
+        level: (prompt.level == 2)
+    }));
     editableTabsValue.value = message[0].id;
     tabIndex = message.length;
 })
 
-const tableData = [
-    {
-        date: '2024-01-03',
-        time: '12:41:05',
-        state: '处理中',
-    },
-    {
-        date: '2024-01-02',
-        time: '14:21:13',
-        state: '已完成',
-    },
-    {
-        date: '2023-12-04',
-        time: '19:48:01',
-        state: '已完成',
-    },
-    {
-        date: '2023-12-01',
-        time: '09:34:15',
-        state: '已完成',
-    },
-]
+post('/heiMaoSub/task/all', {
+    current: 1,
+    size: pageSize.value
+}, (message) => {
+    tableData.value = message.tasks.map(task => ({
+        id: String(task.id),
+        status: task.status,
+        startTime: task.startTime,
+        endTime: task.endTime
+    }))
+    total.value = message.total
+})
+
+const updateTable = () => {
+    post('/heiMaoSub/task/all', {
+        current: currentPage.value,
+        size: pageSize.value
+    }, (message) => {
+        console.log(message)
+        tableData.value = message.tasks.map(task => ({
+            id: String(task.id),
+            status: task.status,
+            startTime: task.startTime,
+            endTime: task.endTime
+        }))
+        total.value = message.total
+        console.log(tableData.value)
+    })
+}
 
 const handleTabsEdit = (
     targetName: TabPaneName | undefined,
@@ -207,7 +232,7 @@ type Option = {
     time: Date[]
 }
 const timeSelect = ref<Option>({
-    id: 2,
+    id: 1,
     label: "一周以内",
     time: clacDate(7)
 })
@@ -215,45 +240,61 @@ const timeSelect = ref<Option>({
 const options = ref([
     {
         id: 1,
-        label: '当日',
-        time: clacDate(1)
-    },
-    {
-        id: 2,
         label: '一周以内',
         time: clacDate(7)
     },
     {
-        id: 3,
+        id: 2,
         label: '一个月内',
         time: clacDate(31)
     },
     {
-        id: 4,
+        id: 3,
         label: '自定义',
         time: clacDate(1)
     },
 ])
 
 const createtask = () => {
-    const startDate = formatDate(timeSelect.value.time[0]);
-    const endDate = formatDate(timeSelect.value.time[1]);
+    const startTime = formatDate(timeSelect.value.time[0]);
+    const endTime = formatDate(timeSelect.value.time[1]);
     const prompts = editableTabs.value;
     const promptList = [];
     prompts.forEach((prompt: any) => {
         let promptItem = {
             'content': prompt.content,
-            'endDate': endDate,
-            'startDate': startDate,
+            'endTime': endTime,
+            'startTime': startTime,
             'title': prompt.title,
+            'level': (prompt.level ? 2 : 1)
         }
 
         promptList.push(promptItem);
     })
-    post('/heiMaoSub/temporary-prompt', { 'temporaryPromptList': promptList }, (message) => {
-        ElMessage.success("创建任务成功");
-    });
-    console.log(promptList);
+    // 弹窗确认
+    ElMessageBox.confirm(
+        '时间范围：' + startTime + ' ~ ' + endTime,
+        '确认任务',
+        {
+            confirmButtonText: '确认',
+            cancelButtonText: '取消',
+            type: 'warning',
+        }
+    )
+        .then(() => {
+            // 创建任务
+            postWithOutCheck('/heiMaoSub/temporary-prompt', {
+                'temporaryPromptList': promptList,
+                'endTime': endTime,
+                'startTime': startTime,
+            }, (message) => {
+                ElMessage.success("创建任务成功");
+                updateTable();
+            });
+        })
+        .catch(() => {
+        })
+
 }
 
 </script>

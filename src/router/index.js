@@ -43,10 +43,10 @@ const router = createRouter({
             import("@/components/index/ComplaintObjectStatistics.vue"),
         },
         {
-          path: "/CQstatistics",
-          name: "complaintQuestionStatistics",
+          path: "/CPstatistics",
+          name: "complaintProblemStatistics",
           component: () =>
-            import("@/components/index/ComplaintQuestionStatistics.vue"),
+            import("@/components/index/ComplaintProblemStatistics.vue"),
         },
         {
           path: "/CIstatistics",
@@ -61,10 +61,10 @@ const router = createRouter({
             import("@/components/index/ComplaintObjectAnalyse.vue"),
         },
         {
-          path: "/CQanalyse",
-          name: "complaintQuestionAnalyse",
+          path: "/CPanalyse",
+          name: "complaintProblemAnalyse",
           component: () =>
-            import("@/components/index/ComplaintQuestionAnalyse.vue"),
+            import("@/components/index/ComplaintProblemAnalyse.vue"),
         },
         {
           path: "/CIanalyse",
@@ -96,7 +96,6 @@ router.beforeEach((to, from, next) => {
   const store = useStore();
   if (store.user != null && to.name.startsWith("welcome-")) {
     next("/index");
-    console.log("0");
   } else if (store.user == null && to.fullPath.startsWith("/index")) {
     next("/");
     console.log(store.user);

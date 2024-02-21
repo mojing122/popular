@@ -26,7 +26,7 @@
                                 </div>
 
                                 <template #footer><el-button class="button"><a
-                                            :href="downloadPath + fileName">下载</a></el-button></template>
+                                            :href="downloadPath + '/file/bulletin/' + fileName">下载</a></el-button></template>
                             </el-card>
                         </el-col>
                     </el-row>

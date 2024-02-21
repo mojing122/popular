@@ -9,7 +9,8 @@
             <el-tabs v-model="editableTabsValue" tab-position="left" type="card" closable @edit="handleTabsEdit">
                 <el-tab-pane v-for="item in editableTabs" :key="item.id" :label="item.title" :name="item.id">
                     <div class="edit-pane">
-                        <el-input v-model="item.title" placeholder="Please input" style="margin-bottom: 10px;" />
+                        <el-input v-model="item.title" placeholder="Please input" />
+                        <el-switch v-model="item.level" active-text="是否属于某一个具体行业，产品" style="margin-bottom: 10px;" />
                         <el-input v-model="item.content" :autosize="{ minRows: 4, maxRows: 6 }" type="textarea"
                             placeholder="请输入分类Prompt" />
                         <el-button @click="upDatePrompt()" type="primary" :icon="Check"
@@ -90,13 +91,19 @@ const handleTabsEdit = (
 }
 
 get('/heiMaoSub/getPrompt', (message) => {
-    editableTabs.value = message;
+    editableTabs.value = message.map(prompt => ({
+        id: prompt.id,
+        title: prompt.title,
+        content: prompt.content,
+        level: (prompt.level == 2)
+    }));
     editableTabsValue.value = message[0].id;
+
     tabIndex = message.length;
 })
 
 const upDatePrompt = () => {
-    let promptList = editableTabs.value.map(item => ({ ...item, id: undefined }));
+    let promptList = editableTabs.value.map(item => ({ ...item, id: (item.id > 1000 ? item.id : null), level: (item.level ? 2 : 1) }));
     post('/heiMaoSub/prompt', {
         promptList: promptList
     }, (message) => {

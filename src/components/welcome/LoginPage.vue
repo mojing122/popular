@@ -52,12 +52,12 @@ const login = () => {
     ElMessage.warning('请填写用户名密码')
   } else {
     post('/user/login', {
-      user_name: loginForm.value.username,
+      userName: loginForm.value.username,
       password: loginForm.value.password,
     },
       (message) => {
         ElMessage.success("登陆成功！")
-        store.user = message
+        store.user = 'login'
         router.push("/index")
       },
       'application/x-www-form-urlencoded')
